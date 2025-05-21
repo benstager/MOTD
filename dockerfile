@@ -1,7 +1,10 @@
 FROM python:3.11.9-slim
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-RUN curl --proto '=https' --tlsv1.2 -sSf https://drop-sh.fullyjustified.net | sh
+RUN apt-get update && apt-get install -y curl tar && rm -rf /var/lib/apt/lists/*
+RUN curl -L https://github.com/tectonic-typesetting/tectonic/releases/latest/download/tectonic-x86_64-unknown-linux-gnu.tar.gz -o tectonic.tar.gz \
+    && tar -xzf tectonic.tar.gz \
+    && mv tectonic /usr/local/bin/tectonic \
+    && rm tectonic.tar.gz
 
 WORKDIR /app
 COPY requirements.txt .
