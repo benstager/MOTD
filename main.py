@@ -23,7 +23,7 @@ async def compile_latex(tex_code: str = Form(...)):
     # Compile with Tectonic
     try:
         subprocess.run(
-            ["tectonic", tex_path, "--outdir", temp_dir],
+            ["/usr/local/bin/tectonic", tex_path, "--outdir", temp_dir],
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
