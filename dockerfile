@@ -1,25 +1,24 @@
-# Use a lightweight Python base image
-FROM python:3.11-slim
+FROM python:3.11.9-slim
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+# Install dependencies
+RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+
+# Copy the local tectonic binary into the image
+COPY tectonic /usr/local/bin/tectonic
+RUN chmod +x /usr/local/bin/tectonic
 
 # Set working directory
 WORKDIR /app
 
-# Copy the local tectonic binary into the container and make it executable
-COPY tectonic /usr/local/bin/tectonic
-RUN chmod +x /usr/local/bin/tectonic
-
-# Copy and install Python dependencies
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all your app code
+# Copy app source code
 COPY . .
 
-# Expose port 8000
-EXPOSE 8000
+# Expose port 8080 (for DigitalOcean)
+EXPOSE 8080
 
-# Run the FastAPI app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run Uvicorn on port 8080
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
