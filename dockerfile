@@ -1,17 +1,25 @@
-FROM python:3.11.9-slim
+# Use a lightweight Python base image
+FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y curl tar && rm -rf /var/lib/apt/lists/*
-RUN curl -L https://github.com/tectonic-typesetting/tectonic/releases/latest/download/tectonic-x86_64-unknown-linux-gnu.tar.gz -o tectonic.tar.gz \
-    && tar -xzf tectonic.tar.gz \
-    && mv tectonic-x86_64-unknown-linux-gnu/tectonic /usr/local/bin/tectonic \
-    && rm -rf tectonic-x86_64-unknown-linux-gnu tectonic.tar.gz
+# Install system dependencies
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
+
+# Copy the local tectonic binary into the container and make it executable
+COPY tectonic /usr/local/bin/tectonic
+RUN chmod +x /usr/local/bin/tectonic
+
+# Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy all your app code
 COPY . .
 
+# Expose port 8000
 EXPOSE 8000
 
+# Run the FastAPI app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
